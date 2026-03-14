@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Consultation | Forever Forward Coaching</title>
+    <meta
+      name="description"
+      content="Book a free consultation with Forever Forward Coaching and map the next move."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="config.js" defer></script>
+    <script src="site.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <img
+          src="ChatGPT_Image_Mar_11_2026_11_58_45_AM.png"
+          alt="Forever Forward Coaching logo"
+          class="brand-mark"
+        />
+        <span class="brand-text">Forever Forward</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="training.html">Training</a>
+        <a class="nav-link" href="military-prep.html">Military Prep</a>
+        <a class="nav-link" href="speaking.html">Speaking</a>
+        <a class="nav-cta active" href="book-consultation.html">Book Consultation</a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="page-intro reveal">
+        <p class="eyebrow">Consultation</p>
+        <h1>Book the conversation that starts the work.</h1>
+        <p>
+          The website roadmap makes this the primary conversion point. This page is structured to
+          become the Calendly embed destination with Stripe support where needed.
+        </p>
+      </section>
+
+      <section class="section section-dark two-column reveal">
+        <div class="consult-panel">
+          <p class="eyebrow">What happens next</p>
+          <h2>Fast, clear, no wasted motion.</h2>
+          <ul class="panel-points">
+            <li>Book a free consultation through Calendly</li>
+            <li>Align on goals and best-fit program</li>
+            <li>Move into payment and onboarding</li>
+          </ul>
+        </div>
+        <div class="embed-placeholder calendly-shell" data-calendly-config="calendlyUrl">
+          <p class="placeholder-title">Calendly Embed Zone</p>
+          <p class="calendly-copy">Drop the scheduling embed here once the live link is ready.</p>
+          <a class="button button-secondary integration-link" data-config-path="calendlyUrl" data-fallback="#" href="#">Open Calendly</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Forever Forward Coaching</p>
+      <p id="year"></p>
+    </footer>
+  </body>
+</html>

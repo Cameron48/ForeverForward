@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speaking | Forever Forward Coaching</title>
+    <meta
+      name="description"
+      content="Speaking engagements on resilience, discipline, veteran mental health, and transformation."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="config.js" defer></script>
+    <script src="site.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <img
+          src="ChatGPT_Image_Mar_11_2026_11_58_45_AM.png"
+          alt="Forever Forward Coaching logo"
+          class="brand-mark"
+        />
+        <span class="brand-text">Forever Forward</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="training.html">Training</a>
+        <a class="nav-link" href="military-prep.html">Military Prep</a>
+        <a class="nav-link active" href="speaking.html">Speaking</a>
+        <a class="nav-cta" href="book-consultation.html">Book Consultation</a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="page-intro reveal">
+        <p class="eyebrow">Speaking</p>
+        <h1>Talks that are direct, useful, and hard to ignore.</h1>
+        <p>
+          Speaking sessions built for colleges, gyms, veteran organizations, and teams that need a
+          message with weight.
+        </p>
+      </section>
+
+      <section class="section section-dark reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Topics</p>
+          <h2>What the room can expect.</h2>
+        </div>
+        <div class="card-grid">
+          <article class="card">
+            <h3>Resilience</h3>
+            <p>How to respond to adversity without building your identity around it.</p>
+          </article>
+          <article class="card">
+            <h3>Discipline</h3>
+            <p>Why standards and repetition matter more than short bursts of motivation.</p>
+          </article>
+          <article class="card">
+            <h3>Veteran Mental Health</h3>
+            <p>Grounded conversations that meet real experience with honesty and respect.</p>
+          </article>
+          <article class="card">
+            <h3>Transformation</h3>
+            <p>The work of becoming stronger after failure, loss, or major transition.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-band reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Inquiry</p>
+          <h2>Request a speaking engagement.</h2>
+        </div>
+        <form class="contact-form speaking-form" data-endpoint-config="speakingFormEndpoint">
+          <p class="form-status" aria-live="polite"></p>
+          <label>
+            Name
+            <input type="text" name="name" placeholder="Your name" required />
+          </label>
+          <label>
+            Organization
+            <input type="text" name="organization" placeholder="Who is booking" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="name@example.com" required />
+          </label>
+          <label>
+            Details
+            <textarea name="details" rows="5" placeholder="Audience, date, and event goals" required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Request Speaking Engagement</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Forever Forward Coaching</p>
+      <p id="year"></p>
+    </footer>
+  </body>
+</html>
