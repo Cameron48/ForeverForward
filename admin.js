@@ -5,6 +5,11 @@
 
   let authToken = localStorage.getItem(TOKEN_KEY) || "";
   let clientsCache = [];
+  let inquiriesCache = [];
+  let activeView = "overview";
+  let clientFilter = "";
+  let clientSort = "recent";
+  let lastAuthError = "";
 
   const authSection = document.getElementById("adminAuth");
   const dashboardSection = document.getElementById("adminDashboard");
@@ -13,9 +18,28 @@
   const authStatus = document.getElementById("authStatus");
   const clientList = document.getElementById("clientList");
   const inquiryList = document.getElementById("inquiryList");
-  const addClientBtn = document.getElementById("addClientBtn");
-  const refreshInquiriesBtn = document.getElementById("refreshInquiriesBtn");
   const signOutBtn = document.getElementById("signOutBtn");
+
+  const sidebar = document.getElementById("adminSidebar");
+  const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+  const sidebarToggle = document.getElementById("sidebarToggle");
+  const adminApp = document.getElementById("adminDashboard");
+  const topbarEyebrow = document.getElementById("topbarEyebrow");
+  const topbarTitle = document.getElementById("topbarTitle");
+  const topbarActions = document.getElementById("topbarActions");
+  const navClientsBadge = document.getElementById("navClientsBadge");
+  const navInquiriesBadge = document.getElementById("navInquiriesBadge");
+  const recentSessions = document.getElementById("recentSessions");
+  const recentInquiries = document.getElementById("recentInquiries");
+  const clientSearchInput = document.getElementById("clientSearch");
+  const clientSortSelect = document.getElementById("clientSort");
+
+  const VIEW_META = {
+    overview: { eyebrow: "Dashboard", title: "Overview" },
+    clients: { eyebrow: "Roster", title: "Clients" },
+    inquiries: { eyebrow: "Inbox", title: "Speaking Inquiries" },
+    tools: { eyebrow: "Shortcuts", title: "Quick Tools" }
+  };
 
   function escapeHtml(s) {
     return String(s == null ? "" : s)
@@ -31,6 +55,13 @@
     const d = new Date(s);
     if (isNaN(d.getTime())) return String(s);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function daysAgo(s) {
+    if (!s) return Infinity;
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return Infinity;
+    return Math.floor((Date.now() - d.getTime()) / 86400000);
   }
 
   async function apiPost(action, body) {
@@ -56,8 +87,10 @@
     if (result && result.success) {
       localStorage.setItem(TOKEN_KEY, password);
       clientsCache = result.clients || [];
+      lastAuthError = "";
       return true;
     }
+    lastAuthError = (result && result.error) || "";
     authToken = "";
     localStorage.removeItem(TOKEN_KEY);
     return false;
@@ -66,24 +99,84 @@
   function showDashboard() {
     authSection.hidden = true;
     dashboardSection.hidden = false;
-    signOutBtn.hidden = false;
+    setActiveView(activeView || "overview");
     renderClients();
+    renderOverview();
     loadInquiries();
   }
 
   function showAuth() {
     authSection.hidden = false;
     dashboardSection.hidden = true;
-    signOutBtn.hidden = true;
   }
 
   function signOut() {
     authToken = "";
     localStorage.removeItem(TOKEN_KEY);
     clientsCache = [];
+    inquiriesCache = [];
+    activeView = "overview";
     showAuth();
   }
 
+  // ---------- View routing ----------
+  function setActiveView(view) {
+    activeView = view;
+    document.querySelectorAll(".sidebar-link[data-view]").forEach(function (el) {
+      el.classList.toggle("is-active", el.dataset.view === view);
+    });
+    document.querySelectorAll(".admin-view").forEach(function (el) {
+      el.classList.toggle("is-active", el.dataset.view === view);
+    });
+    const meta = VIEW_META[view] || { eyebrow: "Dashboard", title: "" };
+    topbarEyebrow.textContent = meta.eyebrow;
+    topbarTitle.textContent = meta.title;
+    renderTopbarActions(view);
+    closeMobileSidebar();
+  }
+
+  function renderTopbarActions(view) {
+    topbarActions.innerHTML = "";
+    if (view === "clients") {
+      const add = document.createElement("button");
+      add.type = "button";
+      add.className = "button button-primary";
+      add.textContent = "+ Add Client";
+      add.addEventListener("click", openAddClient);
+      topbarActions.appendChild(add);
+    } else if (view === "inquiries") {
+      const refresh = document.createElement("button");
+      refresh.type = "button";
+      refresh.className = "button button-secondary";
+      refresh.textContent = "Refresh";
+      refresh.addEventListener("click", function () {
+        inquiryList.innerHTML = '<p class="muted-note">Refreshing…</p>';
+        loadInquiries();
+      });
+      topbarActions.appendChild(refresh);
+    } else if (view === "overview") {
+      const refresh = document.createElement("button");
+      refresh.type = "button";
+      refresh.className = "button button-secondary";
+      refresh.textContent = "Refresh";
+      refresh.addEventListener("click", async function () {
+        await Promise.all([loadClients(), loadInquiries()]);
+      });
+      topbarActions.appendChild(refresh);
+    }
+  }
+
+  // ---------- Mobile drawer ----------
+  function openMobileSidebar() {
+    adminApp.classList.add("sidebar-open");
+    if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+  }
+  function closeMobileSidebar() {
+    adminApp.classList.remove("sidebar-open");
+    if (sidebarBackdrop) sidebarBackdrop.hidden = true;
+  }
+
+  // ---------- Data loading ----------
   async function loadClients() {
     const result = await apiGet("clients");
     if (!result.success) {
@@ -92,6 +185,142 @@
     }
     clientsCache = result.clients || [];
     renderClients();
+    renderOverview();
+  }
+
+  async function loadInquiries() {
+    const result = await apiGet("inquiries");
+    if (!result.success) {
+      inquiryList.innerHTML = '<p class="muted-note">Could not load inquiries.</p>';
+      inquiriesCache = [];
+      renderOverview();
+      return;
+    }
+    inquiriesCache = result.inquiries || [];
+    renderInquiries();
+    renderOverview();
+  }
+
+  // ---------- Overview ----------
+  function renderOverview() {
+    const totalSessions = clientsCache.reduce(function (sum, c) {
+      return sum + ((c.sessions && c.sessions.length) || c.completed || 0);
+    }, 0);
+    const totalRemaining = clientsCache.reduce(function (sum, c) {
+      return sum + Math.max(0, Number(c.remaining) || 0);
+    }, 0);
+    const activeClients = clientsCache.filter(function (c) {
+      return (Number(c.remaining) || 0) > 0;
+    }).length;
+
+    const sessionsLast7 = clientsCache.reduce(function (sum, c) {
+      const ss = c.sessions || [];
+      return sum + ss.filter(function (s) { return daysAgo(s.date) <= 7; }).length;
+    }, 0);
+
+    const inquiriesLast30 = inquiriesCache.filter(function (i) {
+      return daysAgo(i.date) <= 30;
+    }).length;
+
+    setMetric("metricActiveClients", activeClients, clientsCache.length + " total in roster");
+    setMetric("metricSessionsTotal", totalSessions, sessionsLast7 + " in the last 7 days");
+    setMetric("metricRemaining", totalRemaining, "Across all active clients");
+    setMetric("metricInquiries", inquiriesCache.length, inquiriesLast30 + " in the last 30 days");
+
+    // sidebar badges
+    if (navClientsBadge) {
+      const n = clientsCache.length;
+      navClientsBadge.textContent = n;
+      navClientsBadge.hidden = n === 0;
+    }
+    if (navInquiriesBadge) {
+      const n = inquiriesCache.length;
+      navInquiriesBadge.textContent = n;
+      navInquiriesBadge.hidden = n === 0;
+    }
+
+    renderRecentSessions();
+    renderRecentInquiries();
+  }
+
+  function setMetric(id, value, sub) {
+    const v = document.getElementById(id);
+    if (v) v.textContent = value;
+    const s = document.getElementById(id + "Sub");
+    if (s) s.textContent = sub || "";
+    // metrics 2-4 use different sub ids — match by convention
+    const fallback = document.getElementById(
+      id === "metricSessionsTotal" ? "metricSessionsSub" :
+      id === "metricRemaining" ? "metricRemainingSub" :
+      id === "metricInquiries" ? "metricInquiriesSub" :
+      id === "metricActiveClients" ? "metricActiveClientsSub" : ""
+    );
+    if (fallback) fallback.textContent = sub || "";
+  }
+
+  function renderRecentSessions() {
+    if (!recentSessions) return;
+    const flattened = [];
+    clientsCache.forEach(function (c) {
+      (c.sessions || []).forEach(function (s) {
+        flattened.push({ clientName: c.name, date: s.date, notes: s.notes });
+      });
+    });
+    flattened.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+    const top = flattened.slice(0, 5);
+    if (!top.length) {
+      recentSessions.innerHTML = '<p class="muted-note">No sessions logged yet.</p>';
+      return;
+    }
+    recentSessions.innerHTML = top.map(function (s) {
+      return (
+        '<div class="activity-row">' +
+          '<span class="activity-date">' + escapeHtml(formatDate(s.date)) + '</span>' +
+          '<span class="activity-primary">' + escapeHtml(s.clientName) + '</span>' +
+          '<span class="activity-secondary">' + escapeHtml(s.notes || "—") + '</span>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function renderRecentInquiries() {
+    if (!recentInquiries) return;
+    const top = inquiriesCache.slice(0, 5);
+    if (!top.length) {
+      recentInquiries.innerHTML = '<p class="muted-note">No inquiries yet.</p>';
+      return;
+    }
+    recentInquiries.innerHTML = top.map(function (i) {
+      return (
+        '<div class="activity-row">' +
+          '<span class="activity-date">' + escapeHtml(formatDate(i.date)) + '</span>' +
+          '<span class="activity-primary">' + escapeHtml(i.name || "—") + '</span>' +
+          '<span class="activity-secondary">' + escapeHtml(i.organization || "—") + '</span>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  // ---------- Clients view ----------
+  function getFilteredClients() {
+    const q = clientFilter.trim().toLowerCase();
+    let list = clientsCache.slice();
+    if (q) {
+      list = list.filter(function (c) {
+        return (
+          String(c.name || "").toLowerCase().includes(q) ||
+          String(c.email || "").toLowerCase().includes(q) ||
+          String(c.package || "").toLowerCase().includes(q)
+        );
+      });
+    }
+    list.sort(function (a, b) {
+      if (clientSort === "name") return String(a.name || "").localeCompare(String(b.name || ""));
+      if (clientSort === "remaining") return (Number(b.remaining) || 0) - (Number(a.remaining) || 0);
+      if (clientSort === "completed") return (Number(b.completed) || 0) - (Number(a.completed) || 0);
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+    return list;
   }
 
   function renderClients() {
@@ -99,7 +328,12 @@
       clientList.innerHTML = '<p class="muted-note">No clients yet. Add your first client to start tracking sessions.</p>';
       return;
     }
-    clientList.innerHTML = clientsCache.map(function (c) {
+    const list = getFilteredClients();
+    if (!list.length) {
+      clientList.innerHTML = '<p class="muted-note">No clients match that search.</p>';
+      return;
+    }
+    clientList.innerHTML = list.map(function (c) {
       const remaining = Number(c.remaining) || 0;
       const remainingClass = remaining <= 0 ? "remaining-out" : remaining <= 1 ? "remaining-low" : "remaining-ok";
       return (
@@ -146,18 +380,13 @@
     );
   }
 
-  async function loadInquiries() {
-    const result = await apiGet("inquiries");
-    if (!result.success) {
-      inquiryList.innerHTML = '<p class="muted-note">Could not load inquiries.</p>';
-      return;
-    }
-    const items = result.inquiries || [];
-    if (!items.length) {
+  // ---------- Inquiries view ----------
+  function renderInquiries() {
+    if (!inquiriesCache.length) {
       inquiryList.innerHTML = '<p class="muted-note">No speaking inquiries yet.</p>';
       return;
     }
-    inquiryList.innerHTML = items.map(function (i) {
+    inquiryList.innerHTML = inquiriesCache.map(function (i) {
       return (
         '<article class="inquiry-card">' +
           '<div class="inquiry-head">' +
@@ -173,6 +402,7 @@
     }).join("");
   }
 
+  // ---------- Modal ----------
   function buildModal(opts) {
     const overlay = document.createElement("div");
     overlay.className = "modal-overlay";
@@ -286,6 +516,36 @@
     });
   }
 
+  // ---------- Event wiring ----------
+  document.querySelectorAll(".sidebar-link[data-view]").forEach(function (btn) {
+    btn.addEventListener("click", function () { setActiveView(btn.dataset.view); });
+  });
+
+  document.querySelectorAll("[data-jump]").forEach(function (btn) {
+    btn.addEventListener("click", function () { setActiveView(btn.dataset.jump); });
+  });
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", function () {
+      if (adminApp.classList.contains("sidebar-open")) closeMobileSidebar();
+      else openMobileSidebar();
+    });
+  }
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener("click", closeMobileSidebar);
+
+  if (clientSearchInput) {
+    clientSearchInput.addEventListener("input", function () {
+      clientFilter = clientSearchInput.value || "";
+      renderClients();
+    });
+  }
+  if (clientSortSelect) {
+    clientSortSelect.addEventListener("change", function () {
+      clientSort = clientSortSelect.value || "recent";
+      renderClients();
+    });
+  }
+
   clientList.addEventListener("click", async function (e) {
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
@@ -311,11 +571,6 @@
     }
   });
 
-  addClientBtn.addEventListener("click", openAddClient);
-  refreshInquiriesBtn.addEventListener("click", function () {
-    inquiryList.innerHTML = '<p class="muted-note">Refreshing…</p>';
-    loadInquiries();
-  });
   signOutBtn.addEventListener("click", signOut);
 
   authForm.addEventListener("submit", async function (e) {
@@ -331,7 +586,11 @@
       authPassword.value = "";
       showDashboard();
     } else {
-      authStatus.textContent = "Incorrect password.";
+      if (lastAuthError && lastAuthError !== "unauthorized") {
+        authStatus.textContent = "Sign-in error: " + lastAuthError;
+      } else {
+        authStatus.textContent = "Incorrect password.";
+      }
     }
   });
 

@@ -13,88 +13,200 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="config.js" defer></script>
-    <script src="site.js" defer></script>
     <script src="admin.js" defer></script>
   </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="index.html">
+  <body class="admin-body">
+    <!-- Auth screen -->
+    <section class="admin-auth" id="adminAuth">
+      <a class="admin-auth-back" href="index.html">← Back to site</a>
+      <div class="auth-card">
         <img
           src="ChatGPT_Image_Mar_11_2026_11_58_45_AM.png"
-          alt="Forever Forward Coaching logo"
-          class="brand-mark"
+          alt=""
+          class="auth-brand-mark"
         />
-        <span class="brand-text">Forever Forward</span>
-      </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a class="nav-link" href="index.html">Back to Site</a>
-        <button type="button" class="nav-link admin-signout" id="signOutBtn" hidden>Sign Out</button>
-      </nav>
-    </header>
+        <p class="eyebrow">Forever Forward</p>
+        <h1>Admin</h1>
+        <p>Sign in to manage clients, sessions, and speaking inquiries.</p>
+        <form id="authForm" class="auth-form">
+          <label>
+            Password
+            <input type="password" id="authPassword" autocomplete="current-password" required />
+          </label>
+          <button type="submit" class="button button-primary">Sign In</button>
+          <p class="form-status" id="authStatus" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
 
-    <main class="admin-shell">
-      <section class="admin-auth" id="adminAuth">
-        <div class="auth-card">
-          <p class="eyebrow">Admin</p>
-          <h1>Restricted</h1>
-          <p>Enter the admin password to access the dashboard.</p>
-          <form id="authForm" class="contact-form auth-form">
-            <label>
-              Password
-              <input type="password" id="authPassword" autocomplete="current-password" required />
-            </label>
-            <button type="submit" class="button button-primary">Sign In</button>
-            <p class="form-status" id="authStatus" aria-live="polite"></p>
-          </form>
+    <!-- Dashboard app shell -->
+    <div class="admin-app" id="adminDashboard" hidden>
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+          <img
+            src="ChatGPT_Image_Mar_11_2026_11_58_45_AM.png"
+            alt=""
+            class="sidebar-mark"
+          />
+          <div>
+            <p class="sidebar-eyebrow">Forever Forward</p>
+            <p class="sidebar-title">Admin</p>
+          </div>
         </div>
-      </section>
 
-      <section class="admin-dashboard" id="adminDashboard" hidden>
-        <article class="admin-panel">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Clients</p>
-              <h2>Session Tracker</h2>
-            </div>
-            <button type="button" class="button button-primary" id="addClientBtn">+ Add Client</button>
-          </header>
-          <div class="client-list" id="clientList">
-            <p class="muted-note">Loading clients…</p>
+        <nav class="sidebar-nav" aria-label="Dashboard sections">
+          <button type="button" class="sidebar-link is-active" data-view="overview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm9 0h7v-9h-7v9zm0-16v5h7V4h-7z"/></svg>
+            <span>Overview</span>
+          </button>
+          <button type="button" class="sidebar-link" data-view="clients">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 3-1.34 3-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Clients</span>
+            <span class="sidebar-badge" id="navClientsBadge" hidden>0</span>
+          </button>
+          <button type="button" class="sidebar-link" data-view="inquiries">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <span>Inquiries</span>
+            <span class="sidebar-badge" id="navInquiriesBadge" hidden>0</span>
+          </button>
+          <button type="button" class="sidebar-link" data-view="tools">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+            <span>Quick Tools</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <a class="sidebar-link sidebar-link-quiet" href="index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 19l-7-7 7-7 1.41 1.41L6.83 11H21v2H6.83l4.58 4.59z"/></svg>
+            <span>Back to site</span>
+          </a>
+          <button type="button" class="sidebar-link sidebar-link-quiet" id="signOutBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <button type="button" class="topbar-menu" id="sidebarToggle" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+          </button>
+          <div class="topbar-titles">
+            <p class="topbar-eyebrow" id="topbarEyebrow">Dashboard</p>
+            <h1 class="topbar-title" id="topbarTitle">Overview</h1>
           </div>
-        </article>
+          <div class="topbar-actions" id="topbarActions"></div>
+        </header>
 
-        <article class="admin-panel">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Speaking</p>
-              <h2>Recent Inquiries</h2>
+        <div class="admin-views">
+          <!-- Overview -->
+          <section class="admin-view is-active" data-view="overview">
+            <div class="stat-grid">
+              <div class="stat-card">
+                <p class="stat-label">Active clients</p>
+                <p class="stat-value" id="metricActiveClients">—</p>
+                <p class="stat-sub" id="metricActiveClientsSub">&nbsp;</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">Sessions logged</p>
+                <p class="stat-value" id="metricSessionsTotal">—</p>
+                <p class="stat-sub" id="metricSessionsSub">&nbsp;</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">Sessions remaining</p>
+                <p class="stat-value" id="metricRemaining">—</p>
+                <p class="stat-sub" id="metricRemainingSub">&nbsp;</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">New inquiries</p>
+                <p class="stat-value" id="metricInquiries">—</p>
+                <p class="stat-sub" id="metricInquiriesSub">&nbsp;</p>
+              </div>
             </div>
-            <button type="button" class="button button-secondary" id="refreshInquiriesBtn">Refresh</button>
-          </header>
-          <div class="inquiry-list" id="inquiryList">
-            <p class="muted-note">Loading inquiries…</p>
-          </div>
-        </article>
 
-        <article class="admin-panel">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Tools</p>
-              <h2>Quick Links</h2>
+            <div class="overview-grid">
+              <article class="panel">
+                <header class="panel-head">
+                  <h2>Recent sessions</h2>
+                  <button type="button" class="panel-link" data-jump="clients">View all →</button>
+                </header>
+                <div class="panel-body" id="recentSessions">
+                  <p class="muted-note">Loading…</p>
+                </div>
+              </article>
+
+              <article class="panel">
+                <header class="panel-head">
+                  <h2>Latest inquiries</h2>
+                  <button type="button" class="panel-link" data-jump="inquiries">View all →</button>
+                </header>
+                <div class="panel-body" id="recentInquiries">
+                  <p class="muted-note">Loading…</p>
+                </div>
+              </article>
             </div>
-          </header>
-          <div class="quick-links">
-            <a class="button button-secondary" href="https://dashboard.stripe.com/payments" target="_blank" rel="noreferrer">Stripe Payments</a>
-            <a class="button button-secondary" href="https://calendly.com/event_types/user/me" target="_blank" rel="noreferrer">Calendly Schedule</a>
-            <a class="button button-secondary" href="https://mail.google.com" target="_blank" rel="noreferrer">Gmail Inbox</a>
-          </div>
-        </article>
-      </section>
-    </main>
+          </section>
 
-    <footer class="site-footer">
-      <p>Forever Forward Coaching</p>
-      <p id="year"></p>
-    </footer>
+          <!-- Clients -->
+          <section class="admin-view" data-view="clients">
+            <div class="view-toolbar">
+              <div class="search-field">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79L19 20.49 20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+                <input type="search" id="clientSearch" placeholder="Search clients by name, email, or package…" />
+              </div>
+              <select id="clientSort" class="sort-field">
+                <option value="recent">Recently added</option>
+                <option value="name">Name (A→Z)</option>
+                <option value="remaining">Sessions remaining</option>
+                <option value="completed">Sessions logged</option>
+              </select>
+            </div>
+            <div class="client-list" id="clientList">
+              <p class="muted-note">Loading clients…</p>
+            </div>
+          </section>
+
+          <!-- Inquiries -->
+          <section class="admin-view" data-view="inquiries">
+            <div class="inquiry-list" id="inquiryList">
+              <p class="muted-note">Loading inquiries…</p>
+            </div>
+          </section>
+
+          <!-- Quick Tools -->
+          <section class="admin-view" data-view="tools">
+            <div class="tools-grid">
+              <a class="tool-card" href="https://dashboard.stripe.com/payments" target="_blank" rel="noreferrer">
+                <span class="tool-icon" aria-hidden="true">$</span>
+                <h3>Stripe Payments</h3>
+                <p>View payouts and recent customer charges.</p>
+                <span class="tool-link">Open Stripe →</span>
+              </a>
+              <a class="tool-card" href="https://calendly.com/event_types/user/me" target="_blank" rel="noreferrer">
+                <span class="tool-icon" aria-hidden="true">⌚</span>
+                <h3>Calendly</h3>
+                <p>Manage event types and your booking calendar.</p>
+                <span class="tool-link">Open Calendly →</span>
+              </a>
+              <a class="tool-card" href="https://mail.google.com" target="_blank" rel="noreferrer">
+                <span class="tool-icon" aria-hidden="true">✉</span>
+                <h3>Gmail Inbox</h3>
+                <p>Check messages from clients and speaking leads.</p>
+                <span class="tool-link">Open Gmail →</span>
+              </a>
+              <a class="tool-card" href="https://docs.google.com/spreadsheets" target="_blank" rel="noreferrer">
+                <span class="tool-icon" aria-hidden="true">▦</span>
+                <h3>Client Sheet</h3>
+                <p>The underlying Google Sheet that backs this dashboard.</p>
+                <span class="tool-link">Open Sheets →</span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+    </div>
   </body>
 </html>
