@@ -137,11 +137,7 @@ function setupSpeakingForm() {
     }
 
     try {
-      const payload = {
-        _subject: "New speaking engagement request — Forever Forward",
-        _template: "table",
-        _captcha: "false"
-      };
+      const payload = {};
       new FormData(form).forEach((value, key) => {
         payload[key] = value;
       });
@@ -149,14 +145,18 @@ function setupSpeakingForm() {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Content-Type": "text/plain;charset=utf-8"
         },
         body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
         throw new Error("Request failed");
+      }
+
+      const result = await response.json().catch(() => ({ success: true }));
+      if (result.success === false) {
+        throw new Error(result.error || "Request failed");
       }
 
       form.reset();

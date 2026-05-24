@@ -10,6 +10,6 @@ window.FOREVER_FORWARD_CONFIG = {
     group: "https://buy.stripe.com/8x2eV52U51BT8zQ4LN8bS03",
     oneOnOne: "https://buy.stripe.com/8x214f66h94l9DU3HJ8bS04"
   },
-  speakingFormEndpoint: "https://formsubmit.co/ajax/jacob@foreverforwardcoaching.com",
+  speakingFormEndpoint: "https://script.google.com/macros/s/AKfycbwvkIflTRVB0zmjUVaAtbrfkWRCYHcXsKzNnnWWL9PFSey9YfcuJNVRtVdan7Riig8v/exec",
   contactEmail: "info@foreverforwardcoaching.com"
 };
