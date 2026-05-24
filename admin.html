@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin | Forever Forward Coaching</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="config.js" defer></script>
+    <script src="site.js" defer></script>
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <img
+          src="ChatGPT_Image_Mar_11_2026_11_58_45_AM.png"
+          alt="Forever Forward Coaching logo"
+          class="brand-mark"
+        />
+        <span class="brand-text">Forever Forward</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="index.html">Back to Site</a>
+        <button type="button" class="nav-link admin-signout" id="signOutBtn" hidden>Sign Out</button>
+      </nav>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-auth" id="adminAuth">
+        <div class="auth-card">
+          <p class="eyebrow">Admin</p>
+          <h1>Restricted</h1>
+          <p>Enter the admin password to access the dashboard.</p>
+          <form id="authForm" class="contact-form auth-form">
+            <label>
+              Password
+              <input type="password" id="authPassword" autocomplete="current-password" required />
+            </label>
+            <button type="submit" class="button button-primary">Sign In</button>
+            <p class="form-status" id="authStatus" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="admin-dashboard" id="adminDashboard" hidden>
+        <article class="admin-panel">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">Clients</p>
+              <h2>Session Tracker</h2>
+            </div>
+            <button type="button" class="button button-primary" id="addClientBtn">+ Add Client</button>
+          </header>
+          <div class="client-list" id="clientList">
+            <p class="muted-note">Loading clients…</p>
+          </div>
+        </article>
+
+        <article class="admin-panel">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">Speaking</p>
+              <h2>Recent Inquiries</h2>
+            </div>
+            <button type="button" class="button button-secondary" id="refreshInquiriesBtn">Refresh</button>
+          </header>
+          <div class="inquiry-list" id="inquiryList">
+            <p class="muted-note">Loading inquiries…</p>
+          </div>
+        </article>
+
+        <article class="admin-panel">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">Tools</p>
+              <h2>Quick Links</h2>
+            </div>
+          </header>
+          <div class="quick-links">
+            <a class="button button-secondary" href="https://dashboard.stripe.com/payments" target="_blank" rel="noreferrer">Stripe Payments</a>
+            <a class="button button-secondary" href="https://calendly.com/event_types/user/me" target="_blank" rel="noreferrer">Calendly Schedule</a>
+            <a class="button button-secondary" href="https://mail.google.com" target="_blank" rel="noreferrer">Gmail Inbox</a>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Forever Forward Coaching</p>
+      <p id="year"></p>
+    </footer>
+  </body>
+</html>
