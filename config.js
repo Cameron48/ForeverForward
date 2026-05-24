@@ -1,12 +1,15 @@
 window.FOREVER_FORWARD_CONFIG = {
   siteUrl: "https://foreverforwardcoaching.com",
-  calendlyUrl: "PASTE_CALENDLY_URL_HERE",
+  calendlyUrl: "https://calendly.com/jacob-foreverforwardcoaching/30min",
   trainingCheckout: {
-    singleSession: "PASTE_STRIPE_SINGLE_SESSION_URL_HERE",
-    fourPack: "PASTE_STRIPE_4_SESSION_URL_HERE",
-    eightPack: "PASTE_STRIPE_8_SESSION_URL_HERE"
+    singleSession: "https://buy.stripe.com/7sY00b9itgwNcQ66TV8bS00",
+    fivePack: "https://buy.stripe.com/fZu7sD7albctbM2guv8bS01",
+    tenPack: "https://buy.stripe.com/14AeV52U55S9eYe7XZ8bS02"
   },
-  militaryPrepCheckout: "PASTE_STRIPE_MILITARY_PREP_URL_HERE",
+  militaryPrepCheckout: {
+    group: "https://buy.stripe.com/8x2eV52U51BT8zQ4LN8bS03",
+    oneOnOne: "https://buy.stripe.com/8x214f66h94l9DU3HJ8bS04"
+  },
   speakingFormEndpoint: "PASTE_FORM_ENDPOINT_HERE",
   contactEmail: "info@foreverforwardcoaching.com"
 };
