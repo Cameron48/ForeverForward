@@ -171,8 +171,28 @@ function setupSpeakingForm() {
   });
 }
 
+function setupCardHover() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+  if (!window.matchMedia("(hover: hover)").matches) {
+    return;
+  }
+
+  document.querySelectorAll(".card, .price-card").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty("--mx", `${x}%`);
+      card.style.setProperty("--my", `${y}%`);
+    });
+  });
+}
+
 setupIntegrationLinks();
 setupCalendlyZone();
 setupRevealAnimations();
 setupParallax();
+setupCardHover();
 setupSpeakingForm();
