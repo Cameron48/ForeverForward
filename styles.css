@@ -265,11 +265,18 @@ label {
   font-size: 1.05rem;
 }
 
-.hero-actions,
-.callout {
+.hero-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.5rem;
   flex-wrap: wrap;
 }
 
