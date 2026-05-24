@@ -61,7 +61,7 @@ function setupCalendlyZone() {
 }
 
 function setupRevealAnimations() {
-  const nodes = document.querySelectorAll(".reveal");
+  const nodes = document.querySelectorAll(".reveal, .reveal-stagger > *");
   if (!nodes.length) {
     return;
   }
@@ -81,6 +81,38 @@ function setupRevealAnimations() {
   nodes.forEach((node) => observer.observe(node));
 }
 
+function setupParallax() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+
+  const header = document.querySelector(".site-header");
+  const root = document.documentElement;
+  let ticking = false;
+
+  const update = () => {
+    const y = window.scrollY || window.pageYOffset || 0;
+    root.style.setProperty("--scroll-y", y.toFixed(2));
+    if (header) {
+      header.classList.toggle("is-scrolled", y > 24);
+    }
+    ticking = false;
+  };
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    },
+    { passive: true }
+  );
+
+  update();
+}
+
 function setupSpeakingForm() {
   const form = document.querySelector(".speaking-form");
   if (!form) {
@@ -92,7 +124,6 @@ function setupSpeakingForm() {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const formData = new FormData(form);
 
     if (!endpoint) {
       if (status) {
@@ -106,9 +137,22 @@ function setupSpeakingForm() {
     }
 
     try {
+      const payload = {
+        _subject: "New speaking engagement request — Forever Forward",
+        _template: "table",
+        _captcha: "false"
+      };
+      new FormData(form).forEach((value, key) => {
+        payload[key] = value;
+      });
+
       const response = await fetch(endpoint, {
         method: "POST",
-        body: formData
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
@@ -117,11 +161,11 @@ function setupSpeakingForm() {
 
       form.reset();
       if (status) {
-        status.textContent = "Request sent. We will follow up soon.";
+        status.textContent = "Request sent. Jacob will follow up soon.";
       }
     } catch (error) {
       if (status) {
-        status.textContent = "Could not send request. Check the endpoint and try again.";
+        status.textContent = "Could not send request. Please email jacob@foreverforwardcoaching.com directly.";
       }
     }
   });
@@ -130,4 +174,5 @@ function setupSpeakingForm() {
 setupIntegrationLinks();
 setupCalendlyZone();
 setupRevealAnimations();
+setupParallax();
 setupSpeakingForm();
